@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lên Kèo Đi Chơi Nào! ✨</title>
+  <!-- Google Fonts: Quicksand & Pacifico -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Canvas Confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Quicksand', 'sans-serif'],
+            handwriting: ['Pacifico', 'cursive'],
+          },
+          colors: {
+            pastelPink: '#FFF0F5',
+            candyPink: '#FFB6C1',
+            rosePink: '#FF6B8B',
+            softPurple: '#E8DFF5',
+            creamYellow: '#FFF9E6',
+            mintGreen: '#E3F2ED',
+            darkText: '#5A4650'
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+              '50%': { transform: 'translateY(-10px) rotate(3deg)' },
+            },
+            heartBeat: {
+              '0%, 100%': { transform: 'scale(1)' },
+              '50%': { transform: 'scale(1.15)' },
+            }
+          },
+          animation: {
+            float: 'float 3.5s ease-in-out infinite',
+            heart: 'heartBeat 1.8s ease-in-out infinite',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #FFF0F5 0%, #FFF9E6 50%, #E8DFF5 100%);
+      min-height: 100vh;
+      color: #5A4650;
+      overflow-x: hidden;
+      font-family: 'Quicksand', sans-serif;
+    }
+
+    /* Floating hearts background */
+    .bg-heart {
+      position: absolute;
+      font-size: 1.5rem;
+      opacity: 0.25;
+      user-select: none;
+      animation: floatUp 12s linear infinite;
+      z-index: 0;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(105vh) scale(0.6);
+        opacity: 0;
+      }
+      20% {
+        opacity: 0.35;
+      }
+      80% {
+        opacity: 0.35;
+      }
+      100% {
+        transform: translateY(-10vh) scale(1.1);
+        opacity: 0;
+      }
+    }
+
+    /* Cute checkbox radio styling */
+    .option-card input:checked + div {
+      border-color: #FF6B8B;
+      background-color: #FFE6EE;
+      transform: scale(1.03);
+      box-shadow: 0 8px 20px -6px rgba(255, 107, 139, 0.35);
+    }
+
+    /* Ticket edge effect */
+    .ticket-rip-left {
+      position: absolute;
+      left: -14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #FFF0F5;
+    }
+    .ticket-rip-right {
+      position: absolute;
+      right: -14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #FFF0F5;
+    }
+
+    /* Custom Toast */
+    #toast {
+      transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+  </style>
+</head>
+<body class="relative py-8 px-4 flex flex-col items-center justify-start">
+
+  <!-- Floating animated decorative hearts -->
+  <div id="heart-container" class="pointer-events-none fixed inset-0 overflow-hidden"></div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed top-5 z-50 transform -translate-y-24 opacity-0 bg-white/95 backdrop-blur-md border-2 border-rosePink/40 text-darkText px-5 py-3 rounded-2xl shadow-xl flex items-center space-x-3 pointer-events-none font-semibold text-sm sm:text-base">
+    <span class="text-xl">✨</span>
+    <span id="toast-message">Đã sao chép vào bộ nhớ tạm!</span>
+  </div>
+
+  <main class="w-full max-w-xl relative z-10">
+
+    <!-- Header Section -->
+    <header class="text-center mb-6">
+      <div class="inline-block relative">
+        <div class="text-6xl animate-float select-none">💌</div>
+        <span class="absolute -top-1 -right-2 text-2xl animate-heart">💖</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-bold font-handwriting text-rosePink mt-2 tracking-wide">
+        Lời Mời Đi Chơi Nè!
+      </h1>
+      <p class="text-gray-600 mt-2 text-sm sm:text-base font-medium px-4">
+        Dành riêng một buổi hẹn thật ấm áp cùng nhiều kỷ niệm đáng yêu 🌸
+      </p>
+    </header>
+
+    <!-- Booking Form Container -->
+    <div id="booking-container" class="bg-white/85 backdrop-blur-md rounded-3xl p-6 sm:p-8 shadow-xl border-4 border-candyPink/30 transition-all duration-300">
+      
+      <!-- Gặp gỡ nhân vật dễ thương -->
+      <div class="flex items-center justify-center space-x-3 mb-6 bg-pastelPink/70 py-2.5 px-4 rounded-2xl border border-candyPink/30">
+        <span class="text-2xl">🐻</span>
+        <span class="text-xs sm:text-sm font-semibold text-rosePink">"Trăm năm chọn lấy một ngày, hôm nay chốt lịch với ai bây giờ?"</span>
+        <span class="text-2xl">🐰</span>
+      </div>
+
+      <form id="dateForm" class="space-y-6">
+
+        <!-- Tên người hẹn & người được hẹn -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs sm:text-sm font-bold text-darkText mb-1.5 flex items-center gap-1.5">
+              <span>👤</span> Tên người gửi kèo
+            </label>
+            <input 
+              type="text" 
+              id="senderName" 
+              placeholder="VD: Cậu Vàng / Tớ"
+              required
+              class="w-full px-4 py-2.5 rounded-2xl border-2 border-candyPink/50 focus:border-rosePink focus:ring-2 focus:ring-rosePink/20 outline-none text-sm transition-all bg-white"
+            >
+          </div>
+          <div>
+            <label class="block text-xs sm:text-sm font-bold text-darkText mb-1.5 flex items-center gap-1.5">
+              <span>🎀</span> Gửi tới ai nè?
+            </label>
+            <input 
+              type="text" 
+              id="receiverName" 
+              placeholder="VD: Bé Mèo / Bạn iu"
+              required
+              class="w-full px-4 py-2.5 rounded-2xl border-2 border-candyPink/50 focus:border-rosePink focus:ring-2 focus:ring-rosePink/20 outline-none text-sm transition-all bg-white"
+            >
+          </div>
+        </div>
+
+        <!-- Ngày & Giờ -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs sm:text-sm font-bold text-darkText mb-1.5 flex items-center gap-1.5">
+              <span>📅</span> Ngày hẹn hò
+            </label>
+            <input 
+              type="date" 
+              id="datePicker" 
+              required
+              class="w-full px-4 py-2.5 rounded-2xl border-2 border-candyPink/50 focus:border-rosePink focus:ring-2 focus:ring-rosePink/20 outline-none text-sm transition-all bg-white text-gray-700"
+            >
+          </div>
+          <div>
+            <label class="block text-xs sm:text-sm font-bold text-darkText mb-1.5 flex items-center gap-1.5">
+              <span>⏰</span> Giờ đón / Gặp nhau
+            </label>
+            <input 
+              type="time" 
+              id="timePicker" 
+              required
+              class="w-full px-4 py-2.5 rounded-2xl border-2 border-candyPink/50 focus:border-rosePink focus:ring-2 focus:ring-rosePink/20 outline-none text-sm transition-all bg-white text-gray-700"
+            >
+          </div>
+        </div>
+
+        <!-- Lựa chọn hoạt động (Single/Multi-choice) -->
+        <div>
+          <label class="block text-xs sm:text-sm font-bold text-darkText mb-2 flex items-center gap-1.5">
+            <span>🎡</span> Chúng mình sẽ làm gì ta? <span class="text-xs font-normal text-gray-500">(chọn 1 hoặc nhiều)</span>
+          </label>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+            
+            <label class="option-card cursor-pointer">
+              <input type="checkbox" name="activity" value="Ăn uống no nê (Lẩu/Nướng/Ăn vặt)" class="hidden" checked>
+              <div class="p-3 border-2 border-candyPink/30 rounded-2xl flex flex-col items-center justify-center text-center transition-all bg-white/70 hover:border-candyPink">
+                <span class="text-2xl mb-1">🍲</span>
+                <span class="text-xs font-bold">Đi ăn lẩu/nướng</span>
+              </div>
+            </label>
+
+            <label class="option-card cursor-pointer">
+              <input type="checkbox" name="activity" value="Cafe chill tâm sự" class="hidden">
+              <div class="p-3 border-2 border-candyPink/30 rounded-2xl flex flex-col items-center justify-center text-center transition-all bg-white/70 hover:border-candyPink">
+                <span class="text-2xl mb-1">☕</span>
+                <span class="text-xs font-bold">Cafe nói xấu thiên hạ</span>
+              </div>
+            </label>
+
+            <label class="option-card cursor-pointer">
+              <input type="checkbox" name="activity" value="Xem phim rạp & bắp nước" class="hidden">
+              <div class="p-3 border-2 border-candyPink/30 rounded-2xl flex flex-col items-center justify-center text-center transition-all bg-white/70 hover:border-candyPink">
+                <span class="text-2xl mb-1">🎬</span>
+                <span class="text-xs font-bold">Xem phim rạp</span>
+              </div>
+            </label>
+
+            <label class="option-card cursor-pointer">
+              <input type="checkbox" name="activity" value="Lượn phố / Chụp hình photobooth" class="hidden">
+              <div class="p-3 border-2 border-candyPink/30 rounded-2xl flex flex-col items-center justify-center text-center transition-all bg-white/70 hover:border-candyPink">
+                <span class="text-2xl mb-1">📸</span>
+                <span class="text-xs font-bold">Lượn phố & Chụp ảnh</span>
+              </div>
+            </label>
+
+            <label class="option-card cursor-pointer">
+              <input type="checkbox" name="activity" value="Gắp gấu / Arcade game" class="hidden">
+              <div class="p-3 border-2 border-candyPink/30 rounded-2xl flex flex-col items-center justify-center text-center transition-all bg-white/70 hover:border-candyPink">
+                <span class="text-2xl mb-1">🕹️</span>
+                <span class="text-xs font-bold">Khu game / Gắp gấu</span>
+              </div>
+            </label>
+
+            <label class="option-card cursor-pointer">
+              <input type="checkbox" name="activity" value="Đồ tráng miệng / Trà sữa / Bingsu" class="hidden">
+              <div class="p-3 border-2 border-candyPink/30 rounded-2xl flex flex-col items-center justify-center text-center transition-all bg-white/70 hover:border-candyPink">
+                <span class="text-2xl mb-1">🧋</span>
+                <span class="text-xs font-bold">Trà sữa & Bánh ngọt</span>
+              </div>
+            </label>
+
+          </div>
+        </div>
+
+        <!-- Phong cách / Dresscode -->
+        <div>
+          <label class="block text-xs sm:text-sm font-bold text-darkText mb-2 flex items-center gap-1.5">
+            <span>👗</span> Dress code (Phong cách trang phục):
+          </label>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            
+            <label class="option-card cursor-pointer">
+              <input type="radio" name="dresscode" value="Thoải mái / Casual" class="hidden" checked>
+              <div class="p-2.5 border-2 border-candyPink/30 rounded-2xl text-center text-xs font-semibold bg-white/70 transition-all">
+                👟 Thoải mái
+              </div>
+            </label>
+
+            <label class="option-card cursor-pointer">
+              <input type="radio" name="dresscode" value="Dễ thương / Xinh xắn" class="hidden">
+              <div class="p-2.5 border-2 border-candyPink/30 rounded-2xl text-center text-xs font-semibold bg-white/70 transition-all">
+                🌸 Cute xỉu
+              </div>
+            </label>
+
+            <label class="option-card cursor-pointer">
+              <input type="radio" name="dresscode" value="Tone Pastel / Nhẹ nhàng" class="hidden">
+              <div class="p-2.5 border-2 border-candyPink/30 rounded-2xl text-center text-xs font-semibold bg-white/70 transition-all">
+                🎨 Tone Pastel
+              </div>
+            </label>
+
+            <label class="option-card cursor-pointer">
+              <input type="radio" name="dresscode" value="Lên đồ lồng lộn!" class="hidden">
+              <div class="p-2.5 border-2 border-candyPink/30 rounded-2xl text-center text-xs font-semibold bg-white/70 transition-all">
+                ✨ Lồng lộn
+              </div>
+            </label>
+
+          </div>
+        </div>
+
+        <!-- Ghi chú / Yêu cầu đặc biệt -->
+        <div>
+          <label class="block text-xs sm:text-sm font-bold text-darkText mb-1.5 flex items-center gap-1.5">
+            <span>💌</span> Lời nhắn nhủ / Điều ước đặc biệt:
+          </label>
+          <textarea 
+            id="specialNote" 
+            rows="2" 
+            placeholder="VD: Không được đến trễ nha! Cậu bao tớ ly trà sữa nhé... 😋"
+            class="w-full px-4 py-2.5 rounded-2xl border-2 border-candyPink/50 focus:border-rosePink focus:ring-2 focus:ring-rosePink/20 outline-none text-sm transition-all bg-white"
+          ></textarea>
+        </div>
+
+        <!-- Submit Button -->
+        <button 
+          type="submit" 
+          class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-candyPink to-rosePink text-white font-bold text-base sm:text-lg shadow-lg hover:shadow-xl hover:scale-[1.01] active:scale-[0.98] transition-all flex items-center justify-center gap-2 group cursor-pointer"
+        >
+          <span>Chốt Kèo Ngay Nè!</span>
+          <span class="group-hover:rotate-12 transition-transform">💖</span>
+        </button>
+
+      </form>
+    </div>
+
+    <!-- Tấm Vé Hẹn Hò / Boarding Pass (Hiện sau khi submit) -->
+    <div id="ticket-modal" class="hidden mt-6 transition-all duration-500">
+      <div class="relative bg-white rounded-3xl p-6 sm:p-7 shadow-2xl border-4 border-dashed border-rosePink/50 overflow-hidden">
+        
+        <!-- Ticket cutouts -->
+        <div class="ticket-rip-left border-r-2 border-rosePink/40"></div>
+        <div class="ticket-rip-right border-l-2 border-rosePink/40"></div>
+
+        <!-- Ticket Header -->
+        <div class="flex items-center justify-between border-b-2 border-pink-100 pb-4 mb-4">
+          <div class="flex items-center gap-2">
+            <span class="text-3xl">🎫</span>
+            <div>
+              <span class="text-xs uppercase tracking-wider font-bold text-rosePink">DATE PASS VIP</span>
+              <h3 class="text-lg font-bold text-darkText font-handwriting">Vé Hẹn Hò Siêu Đáng Yêu</h3>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="text-xs bg-candyPink/30 text-rosePink font-bold px-2.5 py-1 rounded-full">#KÈO_ĐÃ_CHỐT</span>
+          </div>
+        </div>
+
+        <!-- Ticket Body Details -->
+        <div class="space-y-3.5 text-sm">
+          
+          <div class="flex justify-between items-center bg-pastelPink/50 p-2.5 rounded-xl">
+            <div>
+              <span class="text-[11px] text-gray-500 block">NGƯỜI MỜI</span>
+              <span id="ticket-sender" class="font-bold text-darkText text-base">---</span>
+            </div>
+            <div class="text-xl">👉💞👈</div>
+            <div class="text-right">
+              <span class="text-[11px] text-gray-500 block">NGƯỜI ĐƯỢC MỜI</span>
+              <span id="ticket-receiver" class="font-bold text-rosePink text-base">---</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 bg-creamYellow/60 p-2.5 rounded-xl">
+            <div>
+              <span class="text-[11px] text-gray-500 block">THỜI GIAN</span>
+              <span id="ticket-time" class="font-bold text-darkText">---</span>
+            </div>
+            <div>
+              <span class="text-[11px] text-gray-500 block">NGÀY HẸN</span>
+              <span id="ticket-date" class="font-bold text-darkText">---</span>
+            </div>
+          </div>
+
+          <div class="p-2.5 rounded-xl bg-purple-50/70 border border-softPurple">
+            <span class="text-[11px] text-gray-500 block mb-1">HOẠT ĐỘNG DỰ KIẾN</span>
+            <div id="ticket-activities" class="font-semibold text-xs text-darkText space-y-1">
+              <!-- Render activities -->
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <div class="p-2 rounded-xl bg-pink-50/70">
+              <span class="text-[11px] text-gray-500 block">DRESS CODE</span>
+              <span id="ticket-dresscode" class="font-bold text-xs text-rosePink">---</span>
+            </div>
+            <div class="p-2 rounded-xl bg-blue-50/70">
+              <span class="text-[11px] text-gray-500 block">TÌNH TRẠNG</span>
+              <span class="font-bold text-xs text-emerald-600">Háo hức mong chờ 🥰</span>
+            </div>
+          </div>
+
+          <div id="ticket-note-container" class="p-2.5 rounded-xl bg-gray-50 text-xs italic text-gray-600">
+            <span class="font-bold not-italic">Lời nhắn:</span> "<span id="ticket-note"></span>"
+          </div>
+        </div>
+
+        <!-- Ticket Footer Barcode & Action -->
+        <div class="mt-5 pt-4 border-t-2 border-dashed border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div class="flex items-center space-x-1 tracking-widest text-[10px] text-gray-400 font-mono">
+            <span>||||| ||| |||| || ||||| | ||| ||||</span>
+          </div>
+          <span class="text-xs text-rosePink font-bold">Không được huỷ kèo dưới mọi hình thức! 🔒</span>
+        </div>
+
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="mt-4 flex flex-col sm:flex-row gap-2.5">
+        <button 
+          id="btn-copy" 
+          class="flex-1 py-3 px-4 bg-white border-2 border-candyPink text-rosePink rounded-2xl font-bold text-sm shadow-md hover:bg-candyPink/10 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+        >
+          <span>📋</span> Sao chép thiệp mời
+        </button>
+        <button 
+          id="btn-zalo" 
+          class="flex-1 py-3 px-4 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl font-bold text-sm shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+        >
+          <span>💬</span> Chia sẻ tin nhắn
+        </button>
+        <button 
+          id="btn-edit" 
+          class="py-3 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-2xl font-semibold text-sm transition-all cursor-pointer"
+        >
+          ✏️ Sửa lại
+        </button>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-8 text-center text-xs text-gray-500 pb-4">
+      Made with 💖 for sweet memories | Chúc hai bạn có buổi hẹn thật vui nhé!
+    </footer>
+
+  </main>
+
+  <script>
+    // Set default date to tomorrow
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    document.getElementById('datePicker').value = tomorrow.toISOString().split('T')[0];
+    document.getElementById('timePicker').value = "18:30";
+
+    // Create background floating hearts
+    function createFloatingHearts() {
+      const container = document.getElementById('heart-container');
+      const emojis = ['🌸', '✨', '💖', '🧸', '🍰', '🍡', '🌷'];
+      
+      for (let i = 0; i < 15; i++) {
+        const heart = document.createElement('div');
+        heart.className = 'bg-heart';
+        heart.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+        heart.style.left = `${Math.random() * 95}%`;
+        heart.style.animationDelay = `${Math.random() * 8}s`;
+        heart.style.animationDuration = `${8 + Math.random() * 7}s`;
+        container.appendChild(heart);
+      }
+    }
+    createFloatingHearts();
+
+    // Trigger Confetti
+    function fireConfetti() {
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 80,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#FF6B8B', '#FFB6C1', '#FFF9E6', '#E8DFF5', '#FFD1DC']
+        });
+        setTimeout(() => {
+          confetti({
+            particleCount: 50,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0 }
+          });
+          confetti({
+            particleCount: 50,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1 }
+          });
+        }, 250);
+      }
+    }
+
+    // Toast alert helper
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      const msg = document.getElementById('toast-message');
+      msg.textContent = message;
+      toast.classList.remove('-translate-y-24', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      
+      setTimeout(() => {
+        toast.classList.add('-translate-y-24', 'opacity-0');
+        toast.classList.remove('translate-y-0', 'opacity-100');
+      }, 2500);
+    }
+
+    // Date formatter
+    function formatDateVietnamese(dateStr) {
+      if (!dateStr) return '';
+      const [year, month, day] = dateStr.split('-');
+      return `Ngày ${day} tháng ${month}, ${year}`;
+    }
+
+    let summaryText = "";
+
+    // Form submission
+    const form = document.getElementById('dateForm');
+    const ticketModal = document.getElementById('ticket-modal');
+    const bookingContainer = document.getElementById('booking-container');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const sender = document.getElementById('senderName').value.trim() || 'Người bí ẩn';
+      const receiver = document.getElementById('receiverName').value.trim() || 'Bạn iu';
+      const dateVal = document.getElementById('datePicker').value;
+      const timeVal = document.getElementById('timePicker').value;
+      const noteVal = document.getElementById('specialNote').value.trim();
+
+      // Selected activities
+      const activities = Array.from(document.querySelectorAll('input[name="activity"]:checked'))
+        .map(input => input.value);
+      
+      // Selected dresscode
+      const dresscode = document.querySelector('input[name="dresscode"]:checked')?.value || 'Tự do';
+
+      // Update Ticket DOM
+      document.getElementById('ticket-sender').textContent = sender;
+      document.getElementById('ticket-receiver').textContent = receiver;
+      document.getElementById('ticket-date').textContent = formatDateVietnamese(dateVal);
+      document.getElementById('ticket-time').textContent = timeVal;
+      document.getElementById('ticket-dresscode').textContent = dresscode;
+
+      const actContainer = document.getElementById('ticket-activities');
+      actContainer.innerHTML = '';
+      if (activities.length > 0) {
+        activities.forEach(act => {
+          const item = document.createElement('div');
+          item.className = 'flex items-center gap-1.5';
+          item.innerHTML = `<span class="text-rosePink">•</span><span>${act}</span>`;
+          actContainer.appendChild(item);
+        });
+      } else {
+        actContainer.innerHTML = '<div>• Đi dạo chill chill cùng nhau</div>';
+      }
+
+      const noteContainer = document.getElementById('ticket-note-container');
+      if (noteVal) {
+        document.getElementById('ticket-note').textContent = noteVal;
+        noteContainer.classList.remove('hidden');
+      } else {
+        noteContainer.classList.add('hidden');
+      }
+
+      // Format Text for Copy / Share
+      const actListStr = activities.length > 0 ? activities.map(a => `  - ${a}`).join('\n') : '  - Đi dạo cùng nhau';
+      summaryText = 
+`💌 THIỆP MỜI ĐI CHƠI SIÊU CUTE 💌
+-----------------------------
+Gửi: ${receiver} ✨
+Từ: ${sender} 🌸
+🗓 Thời gian: ${timeVal} - ${formatDateVietnamese(dateVal)}
+🎡 Kế hoạch hẹn hò:
+${actListStr}
+👗 Dress code: ${dresscode}
+${noteVal ? `💌 Lời nhắn: "${noteVal}"\n` : ''}-----------------------------
+Kèo đã chốt, không được bỏ trốn đâu nha! 💖`;
+
+      // Visual display
+      ticketModal.classList.remove('hidden');
+      ticketModal.scrollIntoView({ behavior: 'smooth' });
+      fireConfetti();
+    });
+
+    // Copy Ticket Content
+    document.getElementById('btn-copy').addEventListener('click', () => {
+      const textarea = document.createElement('textarea');
+      textarea.value = summaryText;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      showToast('Đã sao chép nội dung vé hẹn hò! 📋');
+    });
+
+    // Share via Zalo / Messenger fallback
+    document.getElementById('btn-zalo').addEventListener('click', () => {
+      // First copy to clipboard
+      const textarea = document.createElement('textarea');
+      textarea.value = summaryText;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+
+      // Prompt user and provide direct intent where possible
+      showToast('Đã copy tin nhắn! Hãy dán (Paste) vào đoạn chat nhé 💬');
+      
+      // If Web Share API is available (mobile browsers)
+      if (navigator.share) {
+        navigator.share({
+          title: 'Vé hẹn hò siêu cute 💖',
+          text: summaryText,
+        }).catch(() => {});
+      }
+    });
+
+    // Edit button
+    document.getElementById('btn-edit').addEventListener('click', () => {
+      bookingContainer.scrollIntoView({ behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>
